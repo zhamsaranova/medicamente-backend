@@ -1,0 +1,92 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Service {
+  id               Int      @id @default(autoincrement())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  name             String   @unique @db.VarChar(255)
+  published        Boolean  @default(false)
+  icon             String?
+  bannerImage      String?
+  bannerText       String?
+  shortDescription String
+  longDescription  String
+  slug             String   @unique
+  specialists      Expert[]
+  prices           Price[]
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  email     String   @unique
+  password  String
+}
+
+model Expert {
+  id                Int              @id @default(autoincrement())
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  firstName         String           @db.VarChar(50)
+  lastName          String           @db.VarChar(50)
+  middleName        String?          @db.VarChar(50)
+  slug              String           @unique
+  experienceInYears Int?
+  photo             String?
+  rank              Int?
+  services          Service[]
+  tags              String[]
+  specializations   Specialization[]
+  appointments      Appointment[]
+  recordDates       String[]         @default([])
+}
+
+model RecordTime {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  time      String   @unique
+}
+
+model Price {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  name      String    @unique @db.VarChar(255)
+  price     Int
+  oldPrice  Int?
+  services  Service[]
+}
+
+model Appointment {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  fullname  String
+  phone     String
+  email     String
+  birthDate String
+  date      DateTime @unique
+  confirmed Boolean  @default(false)
+  expert    Expert   @relation(fields: [expertId], references: [id])
+  expertId  Int
+}
+
+model Specialization {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String   @unique
+  experts   Expert[]
+}

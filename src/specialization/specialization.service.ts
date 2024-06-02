@@ -33,7 +33,15 @@ export class SpecializationService {
   }
 
   async findAll() {
-    return this.prisma.specialization.findMany({ include: { experts: true } });
+    return this.prisma.specialization.findMany({
+      include: {
+        experts: {
+          include: {
+            appointments: true,
+          },
+        },
+      },
+    });
   }
 
   async getOneById(id: number) {
